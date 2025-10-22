@@ -1,219 +1,174 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>VoiceBridge — Simple</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VoiceBridge — Pro Mobile UI</title>
 <style>
-  :root{--accent:#0b6cff;--muted:#64748b;--card:#fff}
-  *{box-sizing:border-box} body{font-family:Inter,system-ui,Arial;margin:0;background:#f7fbff;color:#0b2545;display:flex;align-items:center;justify-content:center;min-height:100vh}
-  .app{width:100%;max-width:760px;background:var(--card);border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,0.07);padding:18px}
-  header{display:flex;align-items:center;gap:12px}
-  .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#00b2ff);color:white;display:flex;align-items:center;justify-content:center;font-weight:700}
-  h1{margin:0;font-size:20px}
-  p.lead{margin:6px 0 12px;color:var(--muted);font-size:13px}
-  textarea{width:100%;min-height:110px;padding:12px;border-radius:10px;border:1px solid #e6eefc;resize:vertical;font-size:15px}
-  .row{display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap}
-  select,button,input{padding:10px;border-radius:10px;border:1px solid #dbeafe;background:#fff}
-  button.primary{background:var(--accent);color:#fff;border:0}
-  .voices{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-  .voice-chip{padding:8px 10px;border-radius:12px;background:#f1f8ff;border:1px solid #d6e9ff;cursor:pointer}
-  .voice-chip.active{background:var(--accent);color:#fff;border:0}
-  .history{margin-top:12px;border-radius:10px;padding:10px;background:#fbfdff;border:1px solid #eaf4ff;max-height:220px;overflow:auto}
-  .hist-user{color:#0b2545;font-weight:600}
-  .hist-assist{color:#0b6cff;margin-top:6px}
-  .small{font-size:13px;color:var(--muted)}
-  footer{margin-top:12px;font-size:13px;color:#94a3b8}
+:root {
+  --primary:#0b6cff; --bg:#f7fbff; --card:#fff; --text:#0b2545;
+  --user:#e1f0ff; --assistant:#dbeafe; --phrase:#f1f8ff; --fav:#ffdd57;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Poppins,sans-serif;}
+body{background:var(--bg);display:flex;justify-content:center;align-items:center;min-height:100vh;color:var(--text);}
+.container{background:var(--card);border-radius:20px;box-shadow:0 8px 25px rgba(0,0,0,0.1);width:95%;max-width:420px;padding:16px;display:flex;flex-direction:column;}
+h1{margin-bottom:8px;font-size:22px;color:var(--primary);text-align:center;}
+textarea{width:100%;border-radius:16px;border:1px solid #dbeafe;padding:12px;font-size:16px;margin-top:12px;resize:none;}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center;}
+button{padding:12px 16px;border-radius:16px;border:none;background:var(--primary);color:white;font-weight:600;cursor:pointer;transition:0.2s;font-size:15px;}
+button:hover{opacity:0.9;}
+.voices{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;justify-content:center;}
+.voice-chip{padding:8px 12px;border-radius:16px;border:1px solid #dbeafe;background:#f1f8ff;cursor:pointer;font-size:14px;}
+.voice-chip.active{background:var(--primary);color:#fff;border:0;}
+.phrases{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;justify-content:center;}
+.phrase-chip{padding:8px 12px;border-radius:16px;background:var(--phrase);border:1px solid #dbeafe;cursor:pointer;font-size:14px;position:relative;}
+.phrase-chip .del{position:absolute;top:-4px;right:-4px;font-size:12px;background:#ff4d4d;color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.phrase-chip .fav{position:absolute;top:-4px;left:-4px;font-size:12px;background:var(--fav);color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.history{margin-top:16px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:6px;}
+.bubble{padding:10px 14px;border-radius:18px;max-width:80%;word-wrap:break-word;font-size:15px;}
+.user{background:var(--user);align-self:flex-end;border-bottom-right-radius:2px;}
+.assist{background:var(--assistant);align-self:flex-start;border-bottom-left-radius:2px;position:relative;}
+.assist.thinking::after{content:'...';position:absolute;right:8px;bottom:4px;font-size:18px;color:var(--primary);}
+.controls{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.small{text-align:center;font-size:12px;color:#64748b;margin-top:8px;}
+.slider-container{display:flex;gap:6px;align-items:center;margin-top:6px;}
+input[type=range]{flex:1;}
 </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="VoiceBridge app">
-    <header>
-      <div class="logo">VB</div>
-      <div>
-        <h1>VoiceBridge</h1>
-        <p class="lead">Clean UI • 8 realistic voices • AI help • Malayalam-first</p>
-      </div>
-    </header>
+<div class="container">
+<h1>VoiceBridge Pro</h1>
+<textarea id="text" rows="3" placeholder="Type your message...">Hello! I'm at your door.</textarea>
 
-    <textarea id="text" placeholder="Type message...">Hello — I'm at your door.</textarea>
+<div class="row voices" id="voices"></div>
 
-    <div class="row">
-      <div>
-        <label class="small">Voices (4 male / 4 female)</label>
-        <div class="voices" id="voices"></div>
-      </div>
+<div class="controls">
+  <button id="aiCorrectBtn">AI Suggest</button>
+  <button id="speakBtn">Speak</button>
+  <select id="langSelect"><option value="en-IN">English</option><option value="ml-IN">Malayalam</option></select>
+</div>
 
-      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
-        <button id="aiCorrectBtn">AI Suggest</button>
-        <button id="speakBtn" class="primary">Speak</button>
-      </div>
-    </div>
+<div class="slider-container">
+  <label>Speed:</label>
+  <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1">
+  <label>Pitch:</label>
+  <input type="range" id="pitch" min="0.5" max="2" step="0.1" value="1">
+</div>
 
-    <div class="row" style="margin-top:10px">
-      <button id="saveBtn">Save Phrase</button>
-      <button id="playSavedBtn">Saved Phrases</button>
-      <select id="langSelect"><option value="ml-IN">Malayalam</option><option value="en-IN">English</option></select>
-      <div style="margin-left:auto" class="small">If server offline: falls back to browser TTS</div>
-    </div>
+<div class="phrases" id="phrases"></div>
+<div class="controls"><button id="savePhraseBtn">+ Save Current Phrase</button></div>
 
-    <div class="history" id="history" aria-live="polite"></div>
-
-    <footer>VoiceBridge — prototype • Server-required for best voices</footer>
-  </div>
+<div class="history" id="history"></div>
+<div class="small">Tip: Tap phrases to speak instantly. Swipe/delete, mark favorite ⭐. Server TTS recommended for realism.</div>
+</div>
 
 <script>
-/* ---------- Configuration ---------- */
-/* These are placeholder voice IDs. Replace them with real voice IDs from ElevenLabs
-   (the server will use the real IDs). The frontend only needs short labels. */
-
+// --- VOICES ---
 const PRESET_VOICES = [
-  { id: 'male_1', label: 'Male 1' },
-  { id: 'male_2', label: 'Male 2' },
-  { id: 'male_3', label: 'Male 3' },
-  { id: 'male_4', label: 'Male 4' },
-  { id: 'female_1', label: 'Female 1' },
-  { id: 'female_2', label: 'Female 2' },
-  { id: 'female_3', label: 'Female 3' },
-  { id: 'female_4', label: 'Female 4' }
+  {id:'male_1',label:'Male 1'}, {id:'male_2',label:'Male 2'},
+  {id:'male_3',label:'Male 3'}, {id:'male_4',label:'Male 4'},
+  {id:'female_1',label:'Female 1'}, {id:'female_2',label:'Female 2'},
+  {id:'female_3',label:'Female 3'}, {id:'female_4',label:'Female 4'}
 ];
 let selectedVoice = PRESET_VOICES[0].id;
-
-/* ---------- DOM ---------- */
 const voicesWrap = document.getElementById('voices');
-const speakBtn = document.getElementById('speakBtn');
 const textEl = document.getElementById('text');
+const speakBtn = document.getElementById('speakBtn');
+const aiBtn = document.getElementById('aiCorrectBtn');
 const historyEl = document.getElementById('history');
-const aiCorrectBtn = document.getElementById('aiCorrectBtn');
 const langSelect = document.getElementById('langSelect');
+const phrasesDiv = document.getElementById('phrases');
+const savePhraseBtn = document.getElementById('savePhraseBtn');
+const speedInput = document.getElementById('speed');
+const pitchInput = document.getElementById('pitch');
 
-/* Render voice chips (max 8) */
 function renderVoices(){
-  voicesWrap.innerHTML = '';
+  voicesWrap.innerHTML='';
   PRESET_VOICES.forEach(v=>{
-    const b = document.createElement('button');
-    b.className = 'voice-chip' + (v.id===selectedVoice ? ' active' : '');
-    b.textContent = v.label;
-    b.onclick = ()=>{ selectedVoice = v.id; renderVoices(); };
+    const b=document.createElement('button');
+    b.className='voice-chip'+(v.id===selectedVoice?' active':'');
+    b.textContent=v.label;
+    b.onclick=()=>{ selectedVoice=v.id; renderVoices(); };
     voicesWrap.appendChild(b);
   });
 }
 renderVoices();
 
-/* Save / history helpers */
-function addHistory(user, assistant){
-  const userDiv = document.createElement('div');
-  userDiv.innerHTML = `<div class="hist-user">You: ${escapeHtml(user)}</div>`;
-  historyEl.appendChild(userDiv);
-  if(assistant){
-    const aDiv = document.createElement('div');
-    aDiv.className = 'hist-assist';
-    aDiv.innerHTML = `VoiceBridge: ${escapeHtml(assistant)}`;
-    historyEl.appendChild(aDiv);
-  }
-  historyEl.scrollTop = historyEl.scrollHeight;
-}
-function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-/* ---------- AI Suggest (calls /api/ai-correct) ---------- */
-aiCorrectBtn.onclick = async ()=>{
-  const txt = textEl.value.trim();
-  if(!txt){ alert('Type something first'); return; }
-  addHistory(txt, '—');
-  try{
-    const res = await fetch('/api/ai-correct', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ text: txt, lang: langSelect.value })
-    });
-    if(!res.ok) throw new Error('AI server error');
-    const data = await res.json();
-    textEl.value = data.corrected || txt;
-    // update last assistant text
-    const last = historyEl.querySelector('.hist-assist:last-child');
-    if(last) last.textContent = 'VoiceBridge: ' + (data.corrected || txt);
-  }catch(err){
-    // fallback: simple lightweight correction locally
-    const corrected = offlineCorrect(txt);
-    textEl.value = corrected;
-    const last = historyEl.querySelector('.hist-assist:last-child');
-    if(last) last.textContent = 'VoiceBridge: ' + corrected + ' (local)';
-  }
-};
-
-/* small offline correction fallback */
-function offlineCorrect(s){
-  s = s.replace(/\s+/g,' ').trim();
-  if(/^[A-Za-z]/.test(s)){ s = s.charAt(0).toUpperCase() + s.slice(1); if(!/[.?!]$/.test(s)) s+='.'; }
-  return s;
-}
-
-/* ---------- Speak: primary flow ----------
-   1) try server /api/tts (server calls ElevenLabs and returns audio)
-   2) if server fails, fallback to browser speechSynthesis
-*/
-speakBtn.onclick = async ()=>{
-  const txt = textEl.value.trim();
-  if(!txt){ alert('Type something'); return; }
-  addHistory(txt);
-  // try server tts
-  try{
-    const resp = await fetch('/api/tts', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ text: txt, voice: selectedVoice, lang: langSelect.value })
-    });
-    if(!resp.ok) throw new Error('TTS server failed');
-    // response is audio/mpeg
-    const blob = await resp.blob();
-    const url = URL.createObjectURL(blob);
-    await playAudioUrl(url);
-    addHistory('', '(played with server voice)');
-    URL.revokeObjectURL(url);
-    return;
-  }catch(e){
-    // fallback to browser TTS
-    console.warn('Server TTS failed, falling back to browser TTS', e);
-    browserSpeak(txt, langSelect.value);
-    addHistory('', '(played with browser TTS)');
-  }
-};
-
-function playAudioUrl(url){
-  return new Promise((resolve, reject) => {
-    const a = new Audio(url);
-    a.onended = ()=> resolve();
-    a.onerror = (err)=> reject(err);
-    a.play().catch(reject);
+// --- PHRASES ---
+function loadPhrases(){
+  let phrases = JSON.parse(localStorage.getItem('vb_phrases')||'[]');
+  phrasesDiv.innerHTML='';
+  phrases.forEach((p,i)=>{
+    const chip=document.createElement('div'); chip.className='phrase-chip'; chip.textContent=p.text;
+    chip.onclick=()=>{ textEl.value=p.text; speak(); };
+    const del=document.createElement('div'); del.className='del'; del.textContent='×';
+    del.onclick=(e)=>{ e.stopPropagation(); removePhrase(i); };
+    const fav=document.createElement('div'); fav.className='fav'; fav.textContent='★';
+    fav.onclick=(e)=>{ e.stopPropagation(); toggleFav(i); };
+    chip.appendChild(del); chip.appendChild(fav);
+    if(p.fav) chip.style.borderColor='var(--fav)';
+    phrasesDiv.appendChild(chip);
   });
 }
+function savePhrase(){
+  const t=textEl.value.trim(); if(!t) return alert('Type something first');
+  let phrases = JSON.parse(localStorage.getItem('vb_phrases')||'[]');
+  phrases.unshift({text:t,fav:false}); phrases = phrases.filter(Boolean).slice(0,30);
+  localStorage.setItem('vb_phrases',JSON.stringify(phrases));
+  loadPhrases();
+}
+function removePhrase(index){
+  let phrases = JSON.parse(localStorage.getItem('vb_phrases')||'[]');
+  phrases.splice(index,1);
+  localStorage.setItem('vb_phrases',JSON.stringify(phrases));
+  loadPhrases();
+}
+function toggleFav(index){
+  let phrases = JSON.parse(localStorage.getItem('vb_phrases')||'[]');
+  phrases[index].fav = !phrases[index].fav;
+  localStorage.setItem('vb_phrases',JSON.stringify(phrases));
+  loadPhrases();
+}
+savePhraseBtn.onclick=savePhrase;
+loadPhrases();
 
-/* browser fallback */
-function browserSpeak(text, lang){
-  if(!('speechSynthesis' in window)){ alert('No TTS available'); return; }
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = lang || 'en-IN';
-  u.rate = 1.0; u.pitch = 1.0; u.volume = 0.95;
-  speechSynthesis.speak(u);
+// --- HISTORY ---
+function addHistory(user,assistant=''){
+  const u=document.createElement('div'); u.className='bubble user'; u.textContent=user; historyEl.appendChild(u);
+  if(assistant){
+    const a=document.createElement('div'); a.className='bubble assist'; a.textContent=assistant; historyEl.appendChild(a);
+  }
+  historyEl.scrollTop=historyEl.scrollHeight;
 }
 
-/* ---------- Saved phrases (simple localStorage UI) ---------- */
-document.getElementById('saveBtn').onclick = ()=>{
-  const t = textEl.value.trim(); if(!t) return alert('Type something');
-  const arr = JSON.parse(localStorage.getItem('vb_saved')||'[]'); arr.unshift(t); localStorage.setItem('vb_saved', JSON.stringify(arr.slice(0,30)));
-  alert('Saved');
-};
-document.getElementById('playSavedBtn').onclick = ()=>{
-  const arr = JSON.parse(localStorage.getItem('vb_saved')||'[]'); if(!arr.length) return alert('No saved phrases');
-  const pick = prompt('Saved phrases:\\n' + arr.map((v,i)=> (i+1)+'. '+v).join('\\n') + '\\n\\nEnter number to play:');
-  const n = parseInt(pick); if(isNaN(n) || n<1 || n>arr.length) return;
-  textEl.value = arr[n-1]; speakBtn.click();
-};
+// --- SPEAK ---
+async function speak(){
+  const txt=textEl.value.trim(); if(!txt){alert('Type something');return;}
+  addHistory(txt);
+  const rate=parseFloat(speedInput.value); const pitch=parseFloat(pitchInput.value);
+  try{
+    const resp=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:txt,voice:selectedVoice,lang:langSelect.value,rate:rate,pitch:pitch})});
+    if(!resp.ok) throw new Error('Server failed');
+    const blob=await resp.blob(); const url=URL.createObjectURL(blob); const a=new Audio(url); await a.play(); URL.revokeObjectURL(url);
+  }catch(e){
+    console.warn('Server TTS failed, fallback',e);
+    browserSpeak(txt,langSelect.value,rate,pitch);
+  }
+}
+function browserSpeak(text,lang,rate,pitch){if(!('speechSynthesis' in window)){alert('No TTS');return;} speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.lang=lang||'en-IN'; u.rate=rate||1; u.pitch=pitch||1; u.volume=0.95; speechSynthesis.speak(u);}
+speakBtn.onclick=speak;
 
-/* ---------- init ---------- */
-addHistory('Tip','Tap AI Suggest to improve message before speaking. Use speakerphone for calls if needed.');
-
+// --- AI SUGGEST ---
+aiBtn.onclick=async()=>{
+  const txt=textEl.value.trim(); if(!txt){alert('Type message'); return;}
+  const bubble=document.createElement('div'); bubble.className='bubble assist thinking'; bubble.textContent=''; historyEl.appendChild(bubble); historyEl.scrollTop=historyEl.scrollHeight;
+  try{
+    const res=await fetch('/api/ai-correct',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:txt,lang:langSelect.value})});
+    const data=await res.json();
+    bubble.classList.remove('thinking'); bubble.textContent=data.corrected||txt;
+    textEl.value=data.corrected||txt;
+  }catch(err){bubble.classList.remove('thinking'); bubble.textContent=txt;}
+}
 </script>
 </body>
 </html>
