@@ -15,14 +15,14 @@ if(!XI_KEY) console.warn('Warning: XI_API_KEY not set. Server TTS will fail unti
 // Map friendly voice IDs (frontend) to actual ElevenLabs voice IDs.
 // Replace these placeholders with real voice IDs from your ElevenLabs account.
 const VOICE_MAP = {
-  male_1: 'voice-id-from-elevenlabs-1',
-  male_2: 'voice-id-from-elevenlabs-2',
-  male_3: 'voice-id-from-elevenlabs-3',
-  male_4: 'voice-id-from-elevenlabs-4',
-  female_1: 'voice-id-from-elevenlabs-5',
-  female_2: 'voice-id-from-elevenlabs-6',
-  female_3: 'voice-id-from-elevenlabs-7',
-  female_4: 'voice-id-from-elevenlabs-8'
+  male_1: 'lyPbHf3pO5t4kYZYenaY',
+  male_2: '6MoEUz34rbRrmmyxgRm4',
+  male_3: 'nZrzehiJO7UYXi9GOxS8',
+  male_4: 'Hmz0MdhDqv9vPpSMfDkh',
+  female_1: 'fG9s0SXJb213f4UxVHyG',
+  female_2: 'pGYsZruQzo8cpdFVZyJc',
+  female_3: 'MF4J4IDTRo0AxOO4dpFR',
+  female_4: 'OwA6IqdLakQOd19pSLOn'
 };
 
 // TTS endpoint -- calls ElevenLabs and returns audio
