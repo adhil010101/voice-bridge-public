@@ -1,261 +1,219 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>VoiceBridge — Smart Communication</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --primary: #0078ff;
-      --bg-light: #f2f7ff;
-      --bg-dark: #0f172a;
-      --card: #ffffff;
-      --text-dark: #1e293b;
-      --text-light: #f8fafc;
-      --accent: #3b82f6;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    body {
-      margin: 0;
-      background: var(--bg-light);
-      color: var(--text-dark);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 900px;
-      background: var(--card);
-      border-radius: 16px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-      padding: 24px;
-      text-align: center;
-    }
-
-    h1 {
-      margin-bottom: 8px;
-      font-size: 26px;
-      color: var(--primary);
-    }
-
-    p.desc {
-      color: #64748b;
-      margin-bottom: 16px;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 120px;
-      border-radius: 12px;
-      padding: 12px;
-      border: 1px solid #cbd5e1;
-      font-size: 15px;
-      resize: vertical;
-      outline: none;
-    }
-
-    .controls {
-      margin-top: 16px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    select, button {
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 1px solid #cbd5e1;
-      background: #fff;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    button.primary {
-      background: var(--accent);
-      color: white;
-      border: none;
-    }
-
-    button.primary:hover {
-      background: #2563eb;
-    }
-
-    .chip {
-      display: inline-block;
-      padding: 8px 14px;
-      border-radius: 20px;
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      margin: 4px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .chip:hover {
-      background: #dbeafe;
-    }
-
-    footer {
-      margin-top: 18px;
-      font-size: 13px;
-      color: #64748b;
-    }
-
-    .dark-mode {
-      background: var(--bg-dark);
-      color: var(--text-light);
-    }
-
-    .dark-mode .container {
-      background: #1e293b;
-    }
-
-    .dark-mode textarea, .dark-mode select, .dark-mode button {
-      background: #334155;
-      color: #f1f5f9;
-      border-color: #475569;
-    }
-
-    .dark-toggle {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: #e2e8f0;
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .dark-mode .dark-toggle {
-      background: #475569;
-      color: #f8fafc;
-    }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>VoiceBridge — Simple</title>
+<style>
+  :root{--accent:#0b6cff;--muted:#64748b;--card:#fff}
+  *{box-sizing:border-box} body{font-family:Inter,system-ui,Arial;margin:0;background:#f7fbff;color:#0b2545;display:flex;align-items:center;justify-content:center;min-height:100vh}
+  .app{width:100%;max-width:760px;background:var(--card);border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,0.07);padding:18px}
+  header{display:flex;align-items:center;gap:12px}
+  .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#00b2ff);color:white;display:flex;align-items:center;justify-content:center;font-weight:700}
+  h1{margin:0;font-size:20px}
+  p.lead{margin:6px 0 12px;color:var(--muted);font-size:13px}
+  textarea{width:100%;min-height:110px;padding:12px;border-radius:10px;border:1px solid #e6eefc;resize:vertical;font-size:15px}
+  .row{display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap}
+  select,button,input{padding:10px;border-radius:10px;border:1px solid #dbeafe;background:#fff}
+  button.primary{background:var(--accent);color:#fff;border:0}
+  .voices{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .voice-chip{padding:8px 10px;border-radius:12px;background:#f1f8ff;border:1px solid #d6e9ff;cursor:pointer}
+  .voice-chip.active{background:var(--accent);color:#fff;border:0}
+  .history{margin-top:12px;border-radius:10px;padding:10px;background:#fbfdff;border:1px solid #eaf4ff;max-height:220px;overflow:auto}
+  .hist-user{color:#0b2545;font-weight:600}
+  .hist-assist{color:#0b6cff;margin-top:6px}
+  .small{font-size:13px;color:var(--muted)}
+  footer{margin-top:12px;font-size:13px;color:#94a3b8}
+</style>
 </head>
 <body>
-  <button class="dark-toggle" id="themeToggle">🌙</button>
-  <div class="container">
-    <h1>🎙️ VoiceBridge</h1>
-    <p class="desc">Smart multilingual voice assistant with clearer sound & modern design</p>
+  <div class="app" role="application" aria-label="VoiceBridge app">
+    <header>
+      <div class="logo">VB</div>
+      <div>
+        <h1>VoiceBridge</h1>
+        <p class="lead">Clean UI • 8 realistic voices • AI help • Malayalam-first</p>
+      </div>
+    </header>
 
-    <textarea id="text" placeholder="Type something to speak...">Hello! How are you?</textarea>
+    <textarea id="text" placeholder="Type message...">Hello — I'm at your door.</textarea>
 
-    <div class="controls">
-      <select id="lang"></select>
-      <select id="voice"></select>
-      <button id="refreshVoices">🔁 Refresh</button>
-      <button class="primary" id="speakBtn">Speak</button>
-      <button id="recordBtn">🎤 Listen</button>
+    <div class="row">
+      <div>
+        <label class="small">Voices (4 male / 4 female)</label>
+        <div class="voices" id="voices"></div>
+      </div>
+
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+        <button id="aiCorrectBtn">AI Suggest</button>
+        <button id="speakBtn" class="primary">Speak</button>
+      </div>
     </div>
 
-    <div id="phrases"></div>
+    <div class="row" style="margin-top:10px">
+      <button id="saveBtn">Save Phrase</button>
+      <button id="playSavedBtn">Saved Phrases</button>
+      <select id="langSelect"><option value="ml-IN">Malayalam</option><option value="en-IN">English</option></select>
+      <div style="margin-left:auto" class="small">If server offline: falls back to browser TTS</div>
+    </div>
 
-    <footer>
-      VoiceBridge © 2025 | Supports English & Malayalam | Smart echo reducer built-in
-    </footer>
+    <div class="history" id="history" aria-live="polite"></div>
+
+    <footer>VoiceBridge — prototype • Server-required for best voices</footer>
   </div>
 
-  <script>
-    // --- Initialization ---
-    const langSelect = document.getElementById('lang');
-    const voiceSelect = document.getElementById('voice');
-    const speakBtn = document.getElementById('speakBtn');
-    const refreshVoicesBtn = document.getElementById('refreshVoices');
-    const textEl = document.getElementById('text');
-    const themeToggle = document.getElementById('themeToggle');
+<script>
+/* ---------- Configuration ---------- */
+/* These are placeholder voice IDs. Replace them with real voice IDs from ElevenLabs
+   (the server will use the real IDs). The frontend only needs short labels. */
 
-    const LANGS = [
-      ['en-IN','English (India)'],
-      ['ml-IN','Malayalam (India)'],
-      ['hi-IN','Hindi (India)'],
-    ];
+const PRESET_VOICES = [
+  { id: 'male_1', label: 'Male 1' },
+  { id: 'male_2', label: 'Male 2' },
+  { id: 'male_3', label: 'Male 3' },
+  { id: 'male_4', label: 'Male 4' },
+  { id: 'female_1', label: 'Female 1' },
+  { id: 'female_2', label: 'Female 2' },
+  { id: 'female_3', label: 'Female 3' },
+  { id: 'female_4', label: 'Female 4' }
+];
+let selectedVoice = PRESET_VOICES[0].id;
 
-    LANGS.forEach(([code,label])=>{
-      const opt=document.createElement('option');
-      opt.value=code; opt.textContent=label;
-      langSelect.appendChild(opt);
+/* ---------- DOM ---------- */
+const voicesWrap = document.getElementById('voices');
+const speakBtn = document.getElementById('speakBtn');
+const textEl = document.getElementById('text');
+const historyEl = document.getElementById('history');
+const aiCorrectBtn = document.getElementById('aiCorrectBtn');
+const langSelect = document.getElementById('langSelect');
+
+/* Render voice chips (max 8) */
+function renderVoices(){
+  voicesWrap.innerHTML = '';
+  PRESET_VOICES.forEach(v=>{
+    const b = document.createElement('button');
+    b.className = 'voice-chip' + (v.id===selectedVoice ? ' active' : '');
+    b.textContent = v.label;
+    b.onclick = ()=>{ selectedVoice = v.id; renderVoices(); };
+    voicesWrap.appendChild(b);
+  });
+}
+renderVoices();
+
+/* Save / history helpers */
+function addHistory(user, assistant){
+  const userDiv = document.createElement('div');
+  userDiv.innerHTML = `<div class="hist-user">You: ${escapeHtml(user)}</div>`;
+  historyEl.appendChild(userDiv);
+  if(assistant){
+    const aDiv = document.createElement('div');
+    aDiv.className = 'hist-assist';
+    aDiv.innerHTML = `VoiceBridge: ${escapeHtml(assistant)}`;
+    historyEl.appendChild(aDiv);
+  }
+  historyEl.scrollTop = historyEl.scrollHeight;
+}
+function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ---------- AI Suggest (calls /api/ai-correct) ---------- */
+aiCorrectBtn.onclick = async ()=>{
+  const txt = textEl.value.trim();
+  if(!txt){ alert('Type something first'); return; }
+  addHistory(txt, '—');
+  try{
+    const res = await fetch('/api/ai-correct', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ text: txt, lang: langSelect.value })
     });
-    langSelect.value='ml-IN';
+    if(!res.ok) throw new Error('AI server error');
+    const data = await res.json();
+    textEl.value = data.corrected || txt;
+    // update last assistant text
+    const last = historyEl.querySelector('.hist-assist:last-child');
+    if(last) last.textContent = 'VoiceBridge: ' + (data.corrected || txt);
+  }catch(err){
+    // fallback: simple lightweight correction locally
+    const corrected = offlineCorrect(txt);
+    textEl.value = corrected;
+    const last = historyEl.querySelector('.hist-assist:last-child');
+    if(last) last.textContent = 'VoiceBridge: ' + corrected + ' (local)';
+  }
+};
 
-    let voices=[];
-    function loadVoices(){
-      voices=speechSynthesis.getVoices();
-      voiceSelect.innerHTML='';
-      voices.forEach((v,i)=>{
-        const o=document.createElement('option');
-        o.value=i; o.textContent=v.name+' ('+v.lang+')';
-        voiceSelect.appendChild(o);
-      });
-    }
-    if('speechSynthesis' in window){
-      speechSynthesis.onvoiceschanged=loadVoices;
-      setTimeout(loadVoices,300);
-    }
+/* small offline correction fallback */
+function offlineCorrect(s){
+  s = s.replace(/\s+/g,' ').trim();
+  if(/^[A-Za-z]/.test(s)){ s = s.charAt(0).toUpperCase() + s.slice(1); if(!/[.?!]$/.test(s)) s+='.'; }
+  return s;
+}
 
-    function speakText(text){
-      speechSynthesis.cancel();
-      const utter=new SpeechSynthesisUtterance(text);
-      const selLang=langSelect.value;
-      utter.lang=selLang;
-      utter.rate=1;
-      utter.pitch=1;
-      // attempt to use cleaner voices
-      const vIndex=voiceSelect.value;
-      if(voices[vIndex]) utter.voice=voices[vIndex];
-      // reduce echo by short pause and adjust volume
-      utter.volume=0.9;
-      speechSynthesis.speak(utter);
-    }
+/* ---------- Speak: primary flow ----------
+   1) try server /api/tts (server calls ElevenLabs and returns audio)
+   2) if server fails, fallback to browser speechSynthesis
+*/
+speakBtn.onclick = async ()=>{
+  const txt = textEl.value.trim();
+  if(!txt){ alert('Type something'); return; }
+  addHistory(txt);
+  // try server tts
+  try{
+    const resp = await fetch('/api/tts', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ text: txt, voice: selectedVoice, lang: langSelect.value })
+    });
+    if(!resp.ok) throw new Error('TTS server failed');
+    // response is audio/mpeg
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    await playAudioUrl(url);
+    addHistory('', '(played with server voice)');
+    URL.revokeObjectURL(url);
+    return;
+  }catch(e){
+    // fallback to browser TTS
+    console.warn('Server TTS failed, falling back to browser TTS', e);
+    browserSpeak(txt, langSelect.value);
+    addHistory('', '(played with browser TTS)');
+  }
+};
 
-    speakBtn.onclick=()=>{
-      const text=textEl.value.trim();
-      if(!text)return alert('Type something first!');
-      speakText(text);
-    }
+function playAudioUrl(url){
+  return new Promise((resolve, reject) => {
+    const a = new Audio(url);
+    a.onended = ()=> resolve();
+    a.onerror = (err)=> reject(err);
+    a.play().catch(reject);
+  });
+}
 
-    refreshVoicesBtn.onclick=loadVoices;
+/* browser fallback */
+function browserSpeak(text, lang){
+  if(!('speechSynthesis' in window)){ alert('No TTS available'); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang || 'en-IN';
+  u.rate = 1.0; u.pitch = 1.0; u.volume = 0.95;
+  speechSynthesis.speak(u);
+}
 
-    // Speech Recognition
-    const recordBtn=document.getElementById('recordBtn');
-    let recognizing=false; let recognition;
-    if('webkitSpeechRecognition' in window){
-      recognition=new webkitSpeechRecognition();
-      recognition.lang='ml-IN';
-      recognition.continuous=false;
-      recognition.interimResults=false;
-      recognition.onresult=(e)=>{
-        textEl.value=e.results[0][0].transcript;
-      };
-      recognition.onend=()=>{recognizing=false;recordBtn.textContent='🎤 Listen';};
-    }
+/* ---------- Saved phrases (simple localStorage UI) ---------- */
+document.getElementById('saveBtn').onclick = ()=>{
+  const t = textEl.value.trim(); if(!t) return alert('Type something');
+  const arr = JSON.parse(localStorage.getItem('vb_saved')||'[]'); arr.unshift(t); localStorage.setItem('vb_saved', JSON.stringify(arr.slice(0,30)));
+  alert('Saved');
+};
+document.getElementById('playSavedBtn').onclick = ()=>{
+  const arr = JSON.parse(localStorage.getItem('vb_saved')||'[]'); if(!arr.length) return alert('No saved phrases');
+  const pick = prompt('Saved phrases:\\n' + arr.map((v,i)=> (i+1)+'. '+v).join('\\n') + '\\n\\nEnter number to play:');
+  const n = parseInt(pick); if(isNaN(n) || n<1 || n>arr.length) return;
+  textEl.value = arr[n-1]; speakBtn.click();
+};
 
-    recordBtn.onclick=()=>{
-      if(!recognition)return alert('Speech recognition not supported on this browser');
-      if(!recognizing){recognition.start();recognizing=true;recordBtn.textContent='🛑 Stop';}
-      else{recognition.stop();recognizing=false;recordBtn.textContent='🎤 Listen';}
-    }
+/* ---------- init ---------- */
+addHistory('Tip','Tap AI Suggest to improve message before speaking. Use speakerphone for calls if needed.');
 
-    // Theme toggle
-    themeToggle.onclick=()=>{
-      document.body.classList.toggle('dark-mode');
-      themeToggle.textContent=document.body.classList.contains('dark-mode')?'☀️':'🌙';
-    }
-  </script>
+</script>
 </body>
 </html>
