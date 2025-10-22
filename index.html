@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>VoiceBridge — Pro Mobile UI</title>
+<title>VoiceBridge Pro</title>
 <style>
 :root {
   --primary:#0b6cff; --bg:#f7fbff; --card:#fff; --text:#0b2545;
@@ -22,8 +22,8 @@ button:hover{opacity:0.9;}
 .voice-chip.active{background:var(--primary);color:#fff;border:0;}
 .phrases{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;justify-content:center;}
 .phrase-chip{padding:8px 12px;border-radius:16px;background:var(--phrase);border:1px solid #dbeafe;cursor:pointer;font-size:14px;position:relative;}
-.phrase-chip .del{position:absolute;top:-4px;right:-4px;font-size:12px;background:#ff4d4d;color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-.phrase-chip .fav{position:absolute;top:-4px;left:-4px;font-size:12px;background:var(--fav);color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.phrase-chip .del{position:absolute;top:50%;right:4px;transform:translateY(-50%);font-size:12px;background:#ff4d4d;color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.phrase-chip .fav{position:absolute;top:50%;left:4px;transform:translateY(-50%);font-size:12px;background:var(--fav);color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .history{margin-top:16px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:6px;}
 .bubble{padding:10px 14px;border-radius:18px;max-width:80%;word-wrap:break-word;font-size:15px;}
 .user{background:var(--user);align-self:flex-end;border-bottom-right-radius:2px;}
@@ -59,7 +59,7 @@ input[type=range]{flex:1;}
 <div class="controls"><button id="savePhraseBtn">+ Save Current Phrase</button></div>
 
 <div class="history" id="history"></div>
-<div class="small">Tip: Tap phrases to speak instantly. Swipe/delete, mark favorite ⭐. Server TTS recommended for realism.</div>
+<div class="small">Tip: Tap phrases to speak instantly. Swipe/delete, mark favorite ⭐. Uses realistic TTS.</div>
 </div>
 
 <script>
@@ -147,8 +147,12 @@ async function speak(){
   addHistory(txt);
   const rate=parseFloat(speedInput.value); const pitch=parseFloat(pitchInput.value);
   try{
-    const resp=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:txt,voice:selectedVoice,lang:langSelect.value,rate:rate,pitch:pitch})});
-    if(!resp.ok) throw new Error('Server failed');
+    const resp=await fetch('http://localhost:5000/api/tts',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({text:txt,voice:selectedVoice,lang:langSelect.value,rate, pitch})
+    });
+    if(!resp.ok) throw new Error('TTS failed');
     const blob=await resp.blob(); const url=URL.createObjectURL(blob); const a=new Audio(url); await a.play(); URL.revokeObjectURL(url);
   }catch(e){
     console.warn('Server TTS failed, fallback',e);
@@ -163,7 +167,9 @@ aiBtn.onclick=async()=>{
   const txt=textEl.value.trim(); if(!txt){alert('Type message'); return;}
   const bubble=document.createElement('div'); bubble.className='bubble assist thinking'; bubble.textContent=''; historyEl.appendChild(bubble); historyEl.scrollTop=historyEl.scrollHeight;
   try{
-    const res=await fetch('/api/ai-correct',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:txt,lang:langSelect.value})});
+    const res=await fetch('http://localhost:5000/api/ai-correct',{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:txt,lang:langSelect.value})
+    });
     const data=await res.json();
     bubble.classList.remove('thinking'); bubble.textContent=data.corrected||txt;
     textEl.value=data.corrected||txt;
