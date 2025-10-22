@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>VoiceBridge — Starter Prototype</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;margin:0}
+    body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f3f6fb;color:#0b2545}
+    .card{width:980px;max-width:96%;background:white;border-radius:12px;box-shadow:0 8px 30px rgba(11,37,69,0.08);padding:22px}
+    h1{margin:0 0 8px;font-size:20px}
+    small{color:#53657a}
+    .row{display:flex;gap:10px;align-items:center;margin-top:12px}
+    textarea{width:100%;min-height:100px;padding:10px;border-radius:8px;border:1px solid #e3e9f1;resize:vertical;font-size:15px}
+    select,input,button{padding:10px;border-radius:8px;border:1px solid #d7e0ee;background:#fff}
+    button.primary{background:#1167ff;color:white;border:0}
+    .phrases{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .chip{padding:8px 10px;border-radius:999px;background:#f1f6ff;border:1px solid #d6e4ff;cursor:pointer}
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    .hint{margin-top:8px;color:#6d7b8f}
+    .suggestions{margin-top:8px}
+    .footer{margin-top:14px;color:#5f6f86;font-size:13px}
+    .danger{color:#a12}
+    .flex{display:flex;gap:12px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>VoiceBridge — Type → Speak (Prototype)</h1>
+    <small>Simple prototype: type text, choose language/voice, and press Speak. Saves phrases locally.</small>
+
+    <div class="row">
+      <label for="lang">Language / Voice:</label>
+      <select id="lang"></select>
+      <label for="voice">(Optional) Voice:</label>
+      <select id="voice"></select>
+      <button id="refreshVoices">Refresh Voices</button>
+    </div>
+
+    <div style="margin-top:12px">
+      <textarea id="text" placeholder="Type what you want to say...">Hello, I'm the delivery person. I'm at your door.</textarea>
+    </div>
+
+    <div class="row controls">
+      <button id="speakBtn" class="primary">Speak</button>
+      <button id="saveBtn">Save Phrase</button>
+      <button id="clearBtn">Clear</button>
+      <button id="suggestBtn">Suggest Phrases</button>
+    </div>
+
+    <div class="suggestions" id="suggestionsArea"></div>
+
+    <div class="phrases" id="phrases"></div>
+
+    <div class="footer">
+      <div>Notes:</div>
+      <ul>
+        <li>This prototype uses your browser's built-in Text-to-Speech (speechSynthesis). Works offline without an API.</li>
+        <li class="danger">Important: Browsers cannot inject audio into a regular cellular phone call. See below for alternatives.</li>
+      </ul>
+    </div>
+
+    <div style="margin-top:10px;background:#f7fbff;padding:10px;border-radius:8px;border:1px solid #e0f0ff">
+      <strong>Call integration — short explanation:</strong>
+      <div class="hint">On the web you cannot directly send the TTS audio into the other person's cellular call. Options:
+        <ol>
+          <li>Use the phone's speaker: press Speak while on speakerphone so the other person hears it.</li>
+          <li>Build a native Android app later and use Telephony/Connection APIs (advanced).</li>
+          <li>Use VoIP (WebRTC) to call if the other person also uses a web/VoIP client, or use paid services (Twilio) to call phones.</li>
+        </ol>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // --- Simple VoiceBridge prototype JavaScript ---
+
+    const langSelect = document.getElementById('lang');
+    const voiceSelect = document.getElementById('voice');
+    const textEl = document.getElementById('text');
+    const speakBtn = document.getElementById('speakBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const phrasesDiv = document.getElementById('phrases');
+    const clearBtn = document.getElementById('clearBtn');
+    const refreshVoicesBtn = document.getElementById('refreshVoices');
+    const suggestBtn = document.getElementById('suggestBtn');
+    const suggestionsArea = document.getElementById('suggestionsArea');
+
+    const defaultPhrases = [
+      "Hello, I'm the delivery person. I'm at your door.",
+      "Please come outside to collect your order.",
+      "Can you confirm the address?",
+      "I cannot enter — I'll leave the package at the gate.",
+      "Thanks! Have a nice day."
+    ];
+
+    // Languages we'll offer (code -> label)
+    const LANGS = [
+      ['en-IN','English (India)'],
+      ['en-US','English (US)'],
+      ['hi-IN','Hindi (India)'],
+      ['ml-IN','Malayalam (India)']
+    ];
+
+    LANGS.forEach(([code,label])=>{
+      const o = document.createElement('option'); o.value = code; o.textContent = label; langSelect.appendChild(o);
+    });
+
+    // Load saved phrases from localStorage
+    function loadPhrases(){
+      let phrases = JSON.parse(localStorage.getItem('vb_phrases') || 'null');
+      if(!Array.isArray(phrases)) phrases = defaultPhrases.slice();
+      renderPhrases(phrases);
+    }
+
+    function renderPhrases(list){
+      phrasesDiv.innerHTML = '';
+      list.forEach((p,idx)=>{
+        const b = document.createElement('button');
+        b.className='chip'; b.textContent = p;
+        b.title = 'Tap to play. Right-click to remove.';
+        b.onclick = ()=>{ textEl.value = p; speakText(p); }
+        b.oncontextmenu = (ev)=>{ ev.preventDefault(); removePhrase(idx); }
+        phrasesDiv.appendChild(b);
+      });
+    }
+
+    function removePhrase(index){
+      let phrases = JSON.parse(localStorage.getItem('vb_phrases') || 'null');
+      if(!Array.isArray(phrases)) phrases = defaultPhrases.slice();
+      phrases.splice(index,1);
+      localStorage.setItem('vb_phrases',JSON.stringify(phrases));
+      loadPhrases();
+    }
+
+    saveBtn.onclick = ()=>{
+      const t = textEl.value.trim();
+      if(!t) return alert('Type something first');
+      let phrases = JSON.parse(localStorage.getItem('vb_phrases') || 'null');
+      if(!Array.isArray(phrases)) phrases = defaultPhrases.slice();
+      phrases.unshift(t);
+      // keep top 30
+      phrases = phrases.filter(Boolean).slice(0,30);
+      localStorage.setItem('vb_phrases',JSON.stringify(phrases));
+      loadPhrases();
+    }
+
+    clearBtn.onclick = ()=>{ textEl.value=''; }
+
+    // --- Smart suggestions (very small rule-based system) ---
+    suggestBtn.onclick = ()=>{
+      const input = textEl.value.toLowerCase();
+      const suggestions = [];
+      if(input.includes('where')||input.includes('address')){
+        suggestions.push('Can you confirm your address, please?');
+      }
+      if(input.includes('arrived')||input.includes('here')||input.includes('outside')){
+        suggestions.push('I am at the main gate. Can you come out?');
+      }
+      if(input.includes('payment')||input.includes('cash')){
+        suggestions.push('Do you want to pay by cash or card?');
+      }
+      if(input.includes('hello')||input.includes('hi')){
+        suggestions.push('Hello! I am the delivery person.');
+      }
+      if(suggestions.length===0){
+        suggestions.push('Try: "I am outside your door"', 'Try: "Please come to the gate"');
+      }
+      suggestionsArea.innerHTML = '';
+      suggestions.forEach(s=>{
+        const b = document.createElement('button'); b.className='chip'; b.textContent = s;
+        b.onclick = ()=>{ textEl.value = s; speakText(s); }
+        suggestionsArea.appendChild(b);
+      });
+    }
+
+    // --- Speech synthesis ---
+    let voices = [];
+    function loadVoices(){
+      voices = speechSynthesis.getVoices();
+      // populate voice select filtered by selected language
+      const selectedLang = langSelect.value || 'en-IN';
+      voiceSelect.innerHTML = '';
+      const filtered = voices.filter(v=>v.lang && v.lang.toLowerCase().startsWith(selectedLang.split('-')[0]));
+      (filtered.length?filtered:voices).forEach((v,idx)=>{
+        const o = document.createElement('option'); o.value = idx; o.textContent = v.name + ' ('+v.lang+')'; voiceSelect.appendChild(o);
+      });
+    }
+
+    // refresh voices
+    refreshVoicesBtn.onclick = ()=>{ loadVoices(); }
+
+    langSelect.onchange = ()=>{ loadVoices(); }
+
+    function speakText(text){
+      if(!('speechSynthesis' in window)) return alert('Sorry — your browser does not support speechSynthesis. Use Chrome or Edge on Android/Desktop.');
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      const selLang = langSelect.value; u.lang = selLang;
+      const vIndex = voiceSelect.value;
+      if(voices && voices.length && vIndex!==''){
+        const chosen = voices[vIndex] || voices.find(v=>v.lang && v.lang.startsWith(selLang.split('-')[0]));
+        if(chosen) u.voice = chosen;
+      }
+      // a few helpful settings
+      u.rate = 1; u.pitch = 1;
+      speechSynthesis.speak(u);
+    }
+
+    speakBtn.onclick = ()=>{ const t = textEl.value.trim(); if(!t) return alert('Please type a message'); speakText(t); }
+
+    // initialize
+    loadPhrases();
+    // voices may load asynchronously
+    if('speechSynthesis' in window){
+      speechSynthesis.onvoiceschanged = ()=>{ loadVoices(); }
+      // try load now
+      setTimeout(()=>{ loadVoices(); },200);
+    }
+
+    // helpful keyboard shortcut: Ctrl+Enter to speak
+    textEl.addEventListener('keydown', (e)=>{ if(e.ctrlKey && e.key==='Enter'){ speakBtn.click(); } });
+
+  </script>
+</body>
+</html>
